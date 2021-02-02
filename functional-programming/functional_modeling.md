@@ -1,8 +1,13 @@
+# Functional modeling 
+
+
+
 - Encapsulation is not broken because of Pattern Matching because is merely a way to tear down a immutable structure
 
 - Pattern matching works on `unnaply` method that is given by free when you declase a `final case class`
 
--
+  
+
 ```
   final case class RequestTyped[Body](body: TypedEvent[Body], sender: String)
   final case class RequestTypedSecondOption[A](body: TypedEvent[A], sender: String)
@@ -68,7 +73,7 @@ def something(val a: Nothing): String = a
 
 ## Some patterns
 
-```
+```scala
 trait Identified[A] {
     def idOf(a: A): java.util.UUID 
   }
@@ -77,7 +82,5 @@ trait Identified[A] {
   // printId(identified: Identified)
   def printId[A: Identified](a: A): Unit = 
     println(idOf(a))
-
-``
-
-
+}
+```

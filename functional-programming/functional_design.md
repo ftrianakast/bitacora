@@ -1,3 +1,5 @@
+# Functional Design
+
 Notes
 
 1. Executable Encoding: pass a function to the case class. Has the adventage that you can add new operations nut the disadventage you can not add easily a new way of executing the model, a new function as parameter. Used normally to leverage legacy code

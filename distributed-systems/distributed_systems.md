@@ -1,5 +1,10 @@
 # Course on Distributed Systems by Martin Kleppmann
 
+
+
+[toc]
+
+
 ## Books
 
 1. van Steen & Tenenbaum
@@ -14,7 +19,9 @@
 4. Bacon & Harris
 "Operating Systems: Concurrent and Distributed Software Design"
 
-## Why make a Distributed System?
+## Part 1
+
+### Why make a Distributed System?
 
 - Because the problem is inherently distributed, like sending messages
 - For better reliability
@@ -27,60 +34,73 @@ Disadventages:
 2. process may crash (and we might not know)
 3. All this happens nondeterministically
 
-## Distributed Systems and Computer Networking
+### Distributed Systems and Computer Networking
 
 We use an oversimplication of a distributed system:
 
+```
 node i -------------message-------------> node j
+```
 
 Two important aspect of distributed systems:
 
 a) Latency: time untile message arrrives
 b) Bandwith: data volume per unit time
 
-## RPC (Remote Procedure Call)
+###  RPC (Remote Procedure Call)
 
 Its another way of commmunicate nodes. It makes a call to a remote function
-look the same as a local function call.
+It looks the same as a local function call.
 This obeys to the principle "Location Transparency"
 
-However the philosophy is not quite accurate because as we have said network
-os unreliable.
-_CORBA_ was an example of this
+However the philosophy is not quite accurate because as we have said network is unreliable.
+_CORBA_ was an example of this.
 
 2017: Google RPC introduced a new RPC framework called GRPC
 
-## System Models of Distributed systems
+## Part 2
+
+### System Models of Distributed systems
 
 Examples:
 
 1. The two generals problem
 
+```
 army1 and army2 want to attack a city1
+```
+
 The two armies communicated between each other via messengers
 Those messenger are exposed to certain risk: so the message could be lost
 
-army 1               army2                outcome
-does not attack      does not attack      nothing happens
-attacks              does not attack      army1 is defeated
-does not attack      attacks              army2 defeated
-attacks              attacks              city captured
+| Army 1          | Army 2          | Outcome         |
+| --------------- | --------------- | --------------- |
+| does not attack | Does not attack | nothing happens |
+| attacks         | does not attack | army2 defeated  |
+| does not attack | attacks         | army2 defeated  |
+| attacks         | attacks         | city captured   |
 
 Desired: army1 attackas if and only if army2 attacks
 
+- __Situation 1__:
 
-Situation 1: general1 sends the messenger, the message is received by general2
-             but then messenger does not give a response to general 1
+​             general1 sends the messenger, the message is received by general2
+​             but then messenger does not give a response to general 1
 
-Situation 2: general1 sends the messenger, the message is lost
+- __Situation 2__:
+
+  ​      general1 sends the messenger, the message is lost
 
 There is not common knowledge: The only way of knowing something is to communicate it
+
+
 
 2. The Byzantine generals problem
 
 Problem: some of the generals might be traitors
 But with a difference: messengers mechanism never fail
 
+```
                   +-----------+
       +-----------|   army3   |------------+
       |           +-----------+            |
@@ -98,6 +118,8 @@ But with a difference: messengers mechanism never fail
       |  army1  |<-----mess---->   army2   |
       +---------+              +-----------+
 
+```
+
 Conditions:
 
 1. Up to f generals might behave malicously
@@ -110,6 +132,7 @@ Theorem: need 3f + 1 generals in total to tolerate malicious generals
 
 Cryptography (digital signatures) helps - but problem remains hard
 
+```
                +-----------+                                    
     +-----------|  customer |--------------+                    
     |           +-----------+              |                    
@@ -127,12 +150,14 @@ Cryptography (digital signatures) helps - but problem remains hard
     |  online |<-----mess---->   payments  |                    
     |  shop   |              |   service   |                    
     +---------+              +-------------+                    
+```
+
 
 How they all agree in the status of an order?
 
 "Byzantine" has long been used for excessively complicated, bureazcratic, devious. "The Byzantine tax law"
 
-## System models
+### System Models
 
 In real systems, both nodes and networks may be faulty.
 Capture assumptions in a system model consisting of:
@@ -182,7 +207,7 @@ For each of three parts of system modeling, pick one:
 - Nodes: crash-stop, crash-recovery or byzantine
 - Timing: synchronous, partially synchronous or asynchronous
 
-## Fault tolerance
+### Fault tolerance
 
 We want availability to 99.999% per year which means only 5.3 minutes/year
 
@@ -203,7 +228,7 @@ __Eventually perfect failure Detector__
 - May temporarily label a node as correct, even it has crashed
 - But eventually, labels a node as crashed if and only if has crashed
 
-## Times, clocks
+## Part 3:  Times, clocks
 
 - time as schedulers, timeouts, failure detectors, retry times
 - performance measurements
@@ -227,7 +252,7 @@ Unix time is the number of seconds since 1 January of 1970, not counting leap se
 
 Some solution is to smear the leap second during the course of a day
 
-## Clock synchronization
+### Clock synchronization
 
 Because computers use quartz clocks, they could drift, which give us: clock skew: difference between  two clocks at a given point.
 
@@ -245,21 +270,22 @@ Stratum 2: servers that sync with with stratum 1, etc
 The protocol reduces clock skew to few milliseconds in good network conditions,
 but can be much worse!
 
-NTP Client ------------T1-------------->T2 NTP Server
 
+```
+NTP Client ------------T1------------------------>T2 NTP Server
 NTP Client T4<-----------(T1,T2,T3)---------------T3 NTP Server
+```
 
-Roundtrip network delay: d = complete time(T4 - T1) - processing time(T3 - T2)
+Roundtrip network delay: `d = complete time(T4 - T1) - processing time(T3 - T2)`
 
-Estimated server time when client receives response: t3 + d/2
+Estimated server time when client receives response: `t3 + d/2`
 
-Estimated clock skew: t3 + d/2 -t4 = (t2-t1 + t3-t4) / 2
+Estimated clock skew:  `t3 + d/2 -t4 = (t2-t1 + t3-t4) / 2`
 
+`System.nanoTime()`                   --> Time since arbitrary tume Monotonic clock (when the machine booted up). Good for meaurements
+`System.currentTimeMillis()` --> Time since 1 January 1970
 
-System.nanoTime() --> Time since arbitrary tume Monotonic clock (when the machine booted up). Good for meaurements
-Szstem.currentTimeMillis() --> Time since 1 January 1970
-
-## Ordering of messages
+### Ordering of messages
 
 we need to define mathematically:
 
@@ -279,7 +305,7 @@ a || b, we know that a cannot have caused b
 This encodes potential causality
 
 
-# Broadcast protocols and logical time
+## Part 4: Broadcast protocols and logical time
 
 Why physical time is if there is a message m1 with t1 and a message m2 with t2 it could be that t2 < t1.
 
@@ -289,15 +315,16 @@ __Physical Clock__: count number of seconds elapsed
 __Logical Clock__: count number of events occured. They are designed to capture
 causality. (e1 -> e2) => T(e1) < T(e2)
 
-## Logical clocks
+### Logical clocks
 
 - Lamport clocks
 - Vector clocks
 
 They capture the property (e1 -> e2) => T(e1) < T(e2)
 
-### Lamport clocks algorithm
+#### Lamport clocks algorithm
 
+```
 __on__ initialisation __do__
   t :=0       _each node has its own local variable t_
 __end on__
@@ -316,6 +343,7 @@ __on__ receiving (t', m) via the underlying network link __do__
 __end on__
 
 _Properties of Lamport clocks_
+```
 
 Assumptions:
 
@@ -330,3 +358,125 @@ Properties:
 2. L(a) < L(b) does not imply a -> b
 3. It is possible that L(a) = L(b) for a /= b
 
+### ![lamport_clocks](../distributed-systems/lamport_clocks.png)
+
+N(e) is the name of the node which helps to uniquely identify an event 
+
+
+
+![lamport_clocks](../distributed-systems/lamport_clocks_2.png)
+
+
+
+We can defina a total order:
+
+`(a << b)  <=> (L(a) < L(b)) or (L(a) = L(b) and N(a) < N(m))`
+
+The order is causal:
+
+`(a -> b) => (a <<b )`
+
+This is different to what we have previously, in which case events that happen cocurrently
+
+`a || b` it was impossible to know which one happens first. We the new pair (L(node), N(node)) we
+
+can eaily have a total order 
+
+
+
+#### Vector clocks
+
+Lamport clocks have limitations. Given L(a) and L(b) with L(a) < L(b) we can not tell wheter a->b or
+
+a||b.
+
+##### Assumptions:
+
+1. Assume n nodes in the system, N = <N1,N2,....,Nn>
+2. Vector timestamp of event a is V(a) = <t1,t2,...,tn>
+3. ti is number if events ibserved by node Ni
+4. Each node has a current vector timestamp T
+5. On event at node Ni, incement vector element T[i]
+6. Attach current vector timestamp to each message
+7. Recipient merges message vector into its local vector
+
+##### Vectors clocks algorithm
+
+
+
+![lamport_clocks](../distributed-systems/vector_clock_algorithm.png)
+
+
+
+##### Vectors clocks ordering:
+
+- T = T' iff T[i] = T'[i] for all i E {1,...,n}
+- T <= T' iff T[i] <= T'[i] for all i E {1,...,n}
+
+- T < T' iff T <= T' and T != T' (strict inequality)
+
+- T || T' iff  T!<=T' and T' !<= T (they are incomparable)
+
+  
+
+`V(a) <= V(b) iff ({a} U {e | e -> a}) contained in ({b} U {e | e -> b}) `
+
+Properties of this partial order:
+
+- (V(a) < V(b)) <=> (a -> b)
+
+   (This is a biderectional relationship, different on what happens with Lamport clocks)
+
+- (V(a) = V(b)) <=> (a = b)
+
+- (V(a) || V(b)) <=> (a || b)
+
+### Broadcast ordering
+
+#### Broadcast protocols
+
+Broadcast (multicast) is __group communication__:
+
+- One node sends message, all nodes in group deliver it
+- Set of group members may be fixed (static) or dynamic
+- If one node is faulty, remaining group members carry on
+
+- We build upon point-to-point messaging (different to IP multicast)
+
+
+
+![lamport_clocks](../distributed-systems/broadcasting.png)
+
+
+
+#### Forms of reliable broadcast:
+
+- FIFO broadcast
+
+
+
+![broadcast_fifo_1](../distributed-systems/fifo_boradcast_1.png)
+
+
+
+![broadcast_fifo_2](../distributed-systems/fifo_broadcast_2.png)
+
+If we want causal order we must use
+
+#### Causal broadcast
+
+![causal_broadcast_1](../distributed-systems/causal_broadcast_2.png)
+
+#### 
+
+![causal_broadcast_1](../distributed-systems/causal_broadcast_1.png)
+
+
+
+#### Total order broadcast
+
+![total_order](../distributed-systems/total_order_broadcast.png)
+
+
+
+![total_order](../distributed-systems/relationship_broadcast_models.png)
