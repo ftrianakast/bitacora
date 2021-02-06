@@ -394,9 +394,9 @@ a||b.
 
 1. Assume n nodes in the system, N = <N1,N2,....,Nn>
 2. Vector timestamp of event a is V(a) = <t1,t2,...,tn>
-3. ti is number if events ibserved by node Ni
+3. ti is number if events observed by node Ni
 4. Each node has a current vector timestamp T
-5. On event at node Ni, incement vector element T[i]
+5. On event at node Ni, increment vector element T[i]
 6. Attach current vector timestamp to each message
 7. Recipient merges message vector into its local vector
 
@@ -451,7 +451,7 @@ Broadcast (multicast) is __group communication__:
 
 #### Forms of reliable broadcast:
 
-- FIFO broadcast
+##### FIFO broadcast
 
 
 
@@ -463,20 +463,57 @@ Broadcast (multicast) is __group communication__:
 
 If we want causal order we must use
 
-#### Causal broadcast
+##### Causal broadcast
 
 ![causal_broadcast_1](../distributed-systems/causal_broadcast_2.png)
 
-#### 
+
 
 ![causal_broadcast_1](../distributed-systems/causal_broadcast_1.png)
 
 
 
-#### Total order broadcast
+##### Total order broadcast
 
 ![total_order](../distributed-systems/total_order_broadcast.png)
 
 
 
 ![total_order](../distributed-systems/relationship_broadcast_models.png)
+
+
+
+#### Broadcast algorithms
+
+1. Make best.effort broadcast reliable by retransmitting fropped messages
+2. Enforce delivery order on top of reliable broadcast
+
+Even if the sender crasher the oder nodes should figure out the order
+
+
+
+##### How to achieve reliability?
+
+###### Eager reliable broadcast
+
+Idea: The first time a node receives a particulat message, it re-broadcast to each other node
+
+Quite expensive and there are some optimiyations
+
+###### Gosip protocols
+
+When a node receives a message gossip the message to 3 other nodes
+
+
+
+##### FIFO broadcast algorithm
+
+![total_order](../distributed-systems/fifo_algorithm.png)
+
+##### Causal broadcast algorrithm
+
+![total_order](../distributed-systems/causal_algorithm.png)
+
+##### Total order algorithm
+
+![total_order](../distributed-systems/total_order_algorithm.png)
